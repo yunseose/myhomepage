@@ -119,7 +119,7 @@
             border-radius: 12px;
             padding: 30px;
             transition: all 0.3s ease;
-            cursor: pointer;
+            /* cursor: pointer; 제거 */
         }
 
         .project-card:hover {
@@ -158,6 +158,12 @@
             font-size: 0.85em;
             color: #fff;
             font-weight: 600;
+            cursor: pointer; /* 클릭 가능 표시 */
+        }
+
+        .project-card a {
+            pointer-events: auto; /* 내부 a 클릭 보장 */
+            text-decoration: none; /* 밑줄 제거 */
         }
 
         .add-project-btn {
@@ -367,111 +373,3 @@
                         <span class="tag">AI</span>
                         <span class="tag">NLP</span>
                     </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-icon">📱</div>
-                    <h3>할일 관리 앱</h3>
-                    <p>학생들을 위한 직관적인 할일 관리 애플리케이션입니다. 시간표와 과제를 효율적으로 관리할 수 있습니다.</p>
-                    <div class="project-tags">
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">웹앱</span>
-                        <span class="tag">UI/UX</span>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div class="project-icon">🎮</div>
-                    <h3>미니 게임</h3>
-                    <p>HTML5 캔버스를 활용한 인터랙티브 미니 게임입니다. 재미있는 게임 로직을 구현했습니다.</p>
-                    <div class="project-tags">
-    <span class="tag">HTML5</span>
-    <span class="tag">Canvas</span>
-    <a href="https://yunseose.github.io/myhomepage/hazbin_reaction_game.html" target="_blank" class="tag">게임</a>
-</div>
-                </div>
-            </div>
-
-            <button class="add-project-btn" onclick="openModal()">➕ 새 프로젝트 추가</button>
-        </section>
-
-        <footer>
-            <p>© 2025 명신여고 코딩 포트폴리오 | 꿈을 향해 코딩하는 중... 💻</p>
-        </footer>
-    </div>
-
-    <div class="modal" id="projectModal">
-        <div class="modal-content">
-            <h3>새 프로젝트 추가</h3>
-            <form id="projectForm">
-                <div class="form-group">
-                    <label for="projectIcon">이모지 아이콘</label>
-                    <input type="text" id="projectIcon" placeholder="예: 🚀" maxlength="2" required>
-                </div>
-                <div class="form-group">
-                    <label for="projectTitle">프로젝트 제목</label>
-                    <input type="text" id="projectTitle" placeholder="멋진 프로젝트 이름" required>
-                </div>
-                <div class="form-group">
-                    <label for="projectDesc">프로젝트 설명</label>
-                    <textarea id="projectDesc" placeholder="이 프로젝트에 대해 설명해주세요" required></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="projectTags">기술 태그 (쉼표로 구분)</label>
-                    <input type="text" id="projectTags" placeholder="예: Python, AI, 웹" required>
-                </div>
-                <div class="modal-buttons">
-                    <button type="button" class="btn-cancel" onclick="closeModal()">취소</button>
-                    <button type="submit" class="btn-submit">추가하기</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <script>
-        function openModal() {
-            document.getElementById('projectModal').style.display = 'flex';
-        }
-
-        function closeModal() {
-            document.getElementById('projectModal').style.display = 'none';
-            document.getElementById('projectForm').reset();
-        }
-
-        document.getElementById('projectForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const icon = document.getElementById('projectIcon').value;
-            const title = document.getElementById('projectTitle').value;
-            const desc = document.getElementById('projectDesc').value;
-            const tags = document.getElementById('projectTags').value.split(',').map(tag => tag.trim());
-
-            const projectCard = document.createElement('div');
-            projectCard.className = 'project-card';
-            
-            let tagsHTML = '';
-            tags.forEach(tag => {
-                tagsHTML += `<span class="tag">${tag}</span>`;
-            });
-
-            projectCard.innerHTML = `
-                <div class="project-icon">${icon}</div>
-                <h3>${title}</h3>
-                <p>${desc}</p>
-                <div class="project-tags">
-                    ${tagsHTML}
-                </div>
-            `;
-
-            document.getElementById('projectsGrid').appendChild(projectCard);
-            closeModal();
-        });
-
-        document.getElementById('projectModal').addEventListener('click', function(e) {
-            if (e.target === this) {
-                closeModal();
-            }
-        });
-    </script>
-</body>
-</html>
