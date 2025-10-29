@@ -531,10 +531,9 @@
     </div>
 
     <script>
-        // --- [1] MAX COMBO 변수 추가 ---
         let score = 0;
         let combo = 0;
-        let maxCombo = 0; // 최대 콤보 기록 변수 추가
+        let maxCombo = 0; // 최대 콤보 기록 변수
         let timeLeft = 30;
         let gameActive = false;
         let timerInterval;
@@ -551,7 +550,7 @@
         function startGame() {
             score = 0;
             combo = 0;
-            maxCombo = 0; // 게임 시작 시 초기화
+            maxCombo = 0; 
             timeLeft = 30;
             gameActive = true;
             targetCount = 1;
@@ -605,39 +604,40 @@
         }
 
         function updateDifficulty() {
-            // --- [2] 난이도 임계값 및 속도 조정 ---
+            // --- [2] 난이도 임계값 및 속도 조정 (수정됨) ---
             let newTargetCount = targetCount;
 
+            // 1. 타겟 개수 증가 임계값 완화 (100점, 250점)
             // 2개 타겟으로 증가
-            if (score >= 200 && targetCount === 1) {
+            if (score >= 100 && targetCount === 1) { // 200 -> 100
                 newTargetCount = 2;
             // 3개 타겟으로 증가
-            } else if (score >= 450 && targetCount === 2) {
+            } else if (score >= 250 && targetCount === 2) { // 450 -> 250
                 newTargetCount = 3;
             }
 
             // 타겟 개수가 변경되면 난이도를 일시적으로 완화 (Lifetime을 2500ms로 리셋)
             if (newTargetCount !== targetCount) {
                 targetCount = newTargetCount;
-                baseTargetLifetime = 2500; // 개수 늘어날 때 base lifetime 리셋
+                baseTargetLifetime = 2500;
                 targetLifetime = baseTargetLifetime;
             }
 
-            // 현재 타겟 개수에 따른 속도 감소 (score에 비례)
+            // 2. 타겟 생존 시간 감소율 완화 및 최소 생존 시간 증가 (속도 완화)
             if (targetCount === 1) {
-                // 2500ms에서 최대 1800ms까지 감소
-                const scoreImpact = score * 1.5;
-                targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1800);
+                // 2500ms에서 최대 2000ms까지 감소
+                const scoreImpact = score * 0.8; // 이전: 1.5
+                targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 2000);
             } else if (targetCount === 2) {
-                // 2500ms에서 최대 1700ms까지 감소 (점수 200부터 시작)
-                const scoreSinceChange = score - 200;
-                const scoreImpact = scoreSinceChange * 1.0;
-                targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1700);
+                // 2500ms에서 최대 1900ms까지 감소 (점수 100부터 시작)
+                const scoreSinceChange = score - 100; // 기준점 변경
+                const scoreImpact = scoreSinceChange * 0.6; // 이전: 1.0
+                targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1900);
             } else if (targetCount === 3) {
-                // 2500ms에서 최대 1600ms까지 감소 (점수 450부터 시작)
-                const scoreSinceChange = score - 450;
-                const scoreImpact = scoreSinceChange * 0.8;
-                targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1600);
+                // 2500ms에서 최대 1800ms까지 감소 (점수 250부터 시작)
+                const scoreSinceChange = score - 250; // 기준점 변경
+                const scoreImpact = scoreSinceChange * 0.5; // 이전: 0.8
+                targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1800);
             }
 
             // 난이도 표시
@@ -687,7 +687,7 @@
                     if (clickedInCurrentSet === targetCount) {
                         combo++;
                         
-                        // --- [3] Max Combo 갱신 ---
+                        // Max Combo 갱신
                         if (combo > maxCombo) {
                             maxCombo = combo;
                         }
