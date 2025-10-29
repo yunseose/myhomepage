@@ -158,6 +158,8 @@
             font-size: 0.85em;
             color: #fff;
             font-weight: 600;
+            /* 링크 태그처럼 보이도록 커서 변경 */
+            cursor: pointer; 
         }
 
         .add-project-btn {
@@ -387,7 +389,7 @@
                     <div class="project-tags">
                         <span class="tag">HTML5</span>
                         <span class="tag">Canvas</span>
-                        <span class="tag">게임</span>
+                        <span class="tag" onclick="gameTagClicked(event)">게임</span> 
                     </div>
                 </div>
             </div>
@@ -437,6 +439,17 @@
             document.getElementById('projectModal').style.display = 'none';
             document.getElementById('projectForm').reset();
         }
+        
+        // '게임' 태그 클릭 시 목록 페이지로 이동하는 함수 추가
+        function gameTagClicked(event) {
+            event.preventDefault(); // 기본 동작(a 태그가 아닌 span 태그에 적용할 경우 불필요하지만 안전을 위해 유지)
+            
+            // game-projects.html 파일로 이동
+            window.location.href = './game-projects.html'; 
+            
+            // 만약 목록 페이지 없이 바로 순발력 게임으로 이동하려면 아래 주석을 해제하고 위 줄은 주석 처리하세요.
+            // window.location.href = 'https://yunseose.github.io/myhomepage/hazbin_reaction_game.html';
+        }
 
         document.getElementById('projectForm').addEventListener('submit', function(e) {
             e.preventDefault();
@@ -451,7 +464,8 @@
             
             let tagsHTML = '';
             tags.forEach(tag => {
-                tagsHTML += `<span class="tag">${tag}</span>`;
+                // 동적으로 추가되는 태그는 현재는 링크 기능이 없습니다. 필요하면 이 부분도 수정해야 합니다.
+                tagsHTML += `<span class="tag">${tag}</span>`; 
             });
 
             projectCard.innerHTML = `
