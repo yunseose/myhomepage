@@ -183,7 +183,7 @@
             box-shadow: 
                 0 0 10px rgba(0,217,255,0.5),
                 inset 0 0 10px rgba(0,0,0,0.8);
-            position: relative; /* **수정: timer-fill을 포함하기 위해 추가** */
+            position: relative;
         }
 
         .timer-fill {
@@ -191,10 +191,13 @@
             background: linear-gradient(90deg, #ff0055, #00d9ff);
             transition: width 0.1s linear;
             box-shadow: 0 0 20px #00d9ff;
-            position: absolute; /* **수정: 절대 위치 설정** */
-            right: 0;           /* **수정: 오른쪽에서 시작하도록 앵커링** */
+            
+            /* **수정: 왼쪽에서 시작하도록 변경 (right: 0 제거)** */
+            position: absolute; 
+            left: 0;           
             top: 0;
             bottom: 0;
+            width: 100%; /* 시작할 때 100%로 설정됨 */
         }
 
         .timer-fill::after {
@@ -572,7 +575,9 @@
         let targetLifetime = 2500;
         let clickedInCurrentSet = 0;
         let missedSets = 0;
-        const TIME_CAP = 60; // 최대 시간 제한
+        
+        const START_TIME = 30; // **추가: 시작 시간 (시각적 100% 기준)**
+        const TIME_CAP = 60;   // 최대 시간 제한 (게임 한계)
 
         const emojis = ['📺', '⚡', '💻', '🎬', '📡', '🔌', '⚙️', '💾'];
         const colors = ['#00d9ff', '#0088ff', '#00ffff', '#ff0055', '#ff3377'];
@@ -581,7 +586,7 @@
             score = 0;
             combo = 0;
             maxCombo = 0; 
-            timeLeft = 30;
+            timeLeft = START_TIME; // 시작 시간으로 설정
             gameActive = true;
             targetCount = 1;
             baseTargetLifetime = 2500;
@@ -604,7 +609,7 @@
             spawnTargetSet();
             
             if (timerInterval) {
-                clearInterval(timerInterval); // 이전 인터벌 정리
+                clearInterval(timerInterval); 
             }
             
             timerInterval = setInterval(() => {
@@ -614,31 +619,28 @@
                 const timeDecay = 0.1 + (missedSets * 0.02);
                 timeLeft -= timeDecay;
                 
-                // 0 이하 체크 시 UI 업데이트를 강제 적용
                 if (timeLeft <= 0) { 
-                    timeLeft = 0; // 시간을 0으로 고정
+                    timeLeft = 0; 
                     
-                    // UI를 0.0으로 강제 업데이트 (사용자 피드백 반영)
                     document.getElementById('time').textContent = timeLeft.toFixed(1); 
-                    
-                    // 시간 바도 0%로 강제 업데이트 (바의 방향이 바뀌었으므로 right:0에서 width:0)
                     document.getElementById('timerFill').style.width = '0%';
                     
-                    // gameActive가 true인 경우에만 종료 로직 실행
                     if (gameActive) { 
                         endGame();
                     }
-                    return; // 인터벌 종료
+                    return; 
                 }
                 
-                // 정상 작동 시 UI 업데이트
-                document.getElementById('time').textContent = timeLeft.toFixed(1);
+                // --- 시간 바 너비 계산 로직 수정 ---
+                // 1. 현재 남은 시간을 시각적 기준(START_TIME=30s)에 대한 비율로 계산
+                const fillPercentage = (timeLeft / START_TIME) * 100;
                 
-                const timerFill = document.getElementById('timerFill');
-                // 시간이 캡을 넘지 않도록 조정
-                const fillPercentage = Math.min(timeLeft, TIME_CAP) / TIME_CAP * 100;
-                // 바의 너비를 업데이트
-                timerFill.style.width = fillPercentage + '%';
+                // 2. 시각적 너비를 100%로 제한 (30초를 넘어가도 바는 꽉 찬 상태 유지)
+                const visualWidth = Math.min(100, fillPercentage); 
+                
+                document.getElementById('time').textContent = timeLeft.toFixed(1);
+                document.getElementById('timerFill').style.width = visualWidth + '%';
+                // ----------------------------------
                 
                 const timeDisplay = document.getElementById('time');
                 if (timeLeft <= 10 && timeLeft > 0) {
@@ -744,9 +746,7 @@
                 target.style.left = positions[i].x + 'px';
                 target.style.top = positions[i].y + 'px';
 
-                // --- [3] 클릭 이벤트 핸들러 수정 (시간 추가 로직 및 동시 클릭 지원) ---
                 target.onclick = (event) => {
-                    // event.stopPropagation()을 사용하지 않아 동시 클릭(다중 클릭) 가능
                     if (!gameActive || target.classList.contains('clicked')) return;
                     
                     target.classList.add('clicked');
@@ -780,7 +780,6 @@
                         document.getElementById('combo').textContent = combo;
 
                         // 콤보 보너스 시간 추가 (세트 완료 시)
-                        // 타겟 개수 기반 보너스 + 콤보 레벨 기반 보너스
                         const comboTimeBonus = (targetCount * 0.5) + (combo * 0.4);
                         timeLeft += comboTimeBonus;
                         timeLeft = Math.min(timeLeft, TIME_CAP); // 최대 시간 제한 적용
@@ -804,15 +803,13 @@
                         setTimeout(() => spawnTargetSet(), 300);
                     }
                 };
-                // --- 클릭 이벤트 핸들러 수정 끝 ---
-
+                
                 gameArea.appendChild(target);
                 currentSet.push(target);
             }
 
             // 시간 내에 못 클릭하면 세트 실패
             setTimeout(() => {
-                // 게임이 이미 끝났거나 (gameActive=false) 세트가 이미 완료되었다면(currentSet.length=0) 아무것도 하지 않음
                 if (!gameActive || currentSet.length === 0) return;
                 
                 // 세트 실패
@@ -834,12 +831,10 @@
 
         function calculatePositions(count) {
             const gameArea = document.getElementById('gameArea');
-            // .target 크기 (70px)를 고려하여 최대 좌표 계산
             const targetSize = 70;
             const maxX = gameArea.offsetWidth - targetSize;
             const maxY = gameArea.offsetHeight - targetSize;
             const positions = [];
-            // 타겟 간 최소 거리
             const minDistance = 100; 
 
             for (let i = 0; i < count; i++) {
@@ -847,14 +842,11 @@
                 let validPosition = false;
 
                 while (!validPosition && attempts < 50) {
-                    // 0에서 최대 좌표 사이에서 랜덤 위치 생성
                     x = Math.random() * maxX;
                     y = Math.random() * maxY;
                     validPosition = true;
 
                     for (let pos of positions) {
-                        // 생성된 위치와 기존 위치 간의 거리 계산
-                        // 타겟 중앙 간 거리
                         const distance = Math.sqrt(Math.pow((x + targetSize/2) - (pos.x + targetSize/2), 2) + Math.pow((y + targetSize/2) - (pos.y + targetSize/2), 2));
                         if (distance < minDistance) {
                             validPosition = false;
@@ -863,7 +855,6 @@
                     }
                     attempts++;
                 }
-                // 50번 시도 후에도 유효한 위치를 찾지 못하면 그냥 랜덤 위치 사용
                 if (!validPosition) {
                     x = Math.random() * maxX;
                     y = Math.random() * maxY;
@@ -890,17 +881,15 @@
         function endGame() {
             gameActive = false;
             if (timerInterval) {
-                clearInterval(timerInterval); // 확실하게 타이머 중지
+                clearInterval(timerInterval); 
                 timerInterval = null;
             }
             
-            // 재시작 버튼이 이미 존재하면 제거 (중복 방지)
             const oldRestartBtn = document.querySelector('.btn-restart');
             if (oldRestartBtn) oldRestartBtn.remove();
 
 
             const gameArea = document.getElementById('gameArea');
-            // 게임 영역의 모든 자식 요소(타겟)를 제거하고 게임 오버 화면 삽입
             gameArea.innerHTML = `
                 <div class="game-over-screen">
                     <h2>BROADCAST ENDED</h2>
