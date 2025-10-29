@@ -558,7 +558,7 @@
     <script>
         let score = 0;
         let combo = 0;
-        let maxCombo = 0; // 최대 콤보 기록 변수
+        let maxCombo = 0; 
         let timeLeft = 30;
         let gameActive = false;
         let timerInterval;
@@ -599,6 +599,10 @@
 
             spawnTargetSet();
             
+            if (timerInterval) {
+                clearInterval(timerInterval); // 이전 인터벌 정리
+            }
+            
             timerInterval = setInterval(() => {
                 if (!gameActive) return;
                 
@@ -606,10 +610,19 @@
                 const timeDecay = 0.1 + (missedSets * 0.02);
                 timeLeft -= timeDecay;
                 
-                if (timeLeft <= 0) {
-                    timeLeft = 0;
-                    endGame();
+                // --- 버그 수정: 0 이하 체크를 강력하게 적용 ---
+                if (timeLeft <= 0.1) { 
+                    timeLeft = 0; // 시간을 0으로 고정
+                    
+                    // gameActive가 true인 경우에만 종료 로직 실행 (중복 호출 방지)
+                    if (gameActive) { 
+                        endGame();
+                        // endGame에서 gameActive=false와 clearInterval이 호출되므로, 
+                        // 이후의 UI 업데이트는 실행되지 않아야 합니다.
+                        return; 
+                    }
                 }
+                // --- 버그 수정 끝 ---
                 
                 document.getElementById('time').textContent = timeLeft.toFixed(1);
                 
@@ -790,29 +803,34 @@
 
             // 시간 내에 못 클릭하면 세트 실패
             setTimeout(() => {
-                if (currentSet.length > 0 && currentSet[0].parentElement) {
-                    // 세트 실패
-                    combo = 0;
-                    missedSets++;
-                    document.getElementById('combo').textContent = combo;
-                    
-                    // 현재 세트 모두 제거
-                    currentSet.forEach(t => {
-                        if (t.parentElement) t.remove();
-                    });
-                    currentSet = [];
-                    
-                    // 다음 세트 생성
-                    spawnTargetSet();
-                }
+                // 게임이 이미 끝났거나 (gameActive=false) 세트가 이미 완료되었다면(currentSet.length=0) 아무것도 하지 않음
+                if (!gameActive || currentSet.length === 0) return;
+                
+                // 세트 실패
+                combo = 0;
+                missedSets++;
+                document.getElementById('combo').textContent = combo;
+                
+                // 현재 세트 모두 제거
+                currentSet.forEach(t => {
+                    if (t.parentElement) t.remove();
+                });
+                currentSet = [];
+                
+                // 다음 세트 생성
+                spawnTargetSet();
+                
             }, targetLifetime);
         }
 
         function calculatePositions(count) {
             const gameArea = document.getElementById('gameArea');
-            const maxX = gameArea.offsetWidth - 70;
-            const maxY = gameArea.offsetHeight - 70;
+            // .target 크기 (70px)를 고려하여 최대 좌표 계산
+            const targetSize = 70;
+            const maxX = gameArea.offsetWidth - targetSize;
+            const maxY = gameArea.offsetHeight - targetSize;
             const positions = [];
+            // 타겟 간 최소 거리
             const minDistance = 100; 
 
             for (let i = 0; i < count; i++) {
@@ -820,12 +838,15 @@
                 let validPosition = false;
 
                 while (!validPosition && attempts < 50) {
+                    // 0에서 최대 좌표 사이에서 랜덤 위치 생성
                     x = Math.random() * maxX;
                     y = Math.random() * maxY;
                     validPosition = true;
 
                     for (let pos of positions) {
-                        const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+                        // 생성된 위치와 기존 위치 간의 거리 계산
+                        // 타겟 중앙 간 거리
+                        const distance = Math.sqrt(Math.pow((x + targetSize/2) - (pos.x + targetSize/2), 2) + Math.pow((y + targetSize/2) - (pos.y + targetSize/2), 2));
                         if (distance < minDistance) {
                             validPosition = false;
                             break;
@@ -833,6 +854,7 @@
                     }
                     attempts++;
                 }
+                // 50번 시도 후에도 유효한 위치를 찾지 못하면 그냥 랜덤 위치 사용
                 if (!validPosition) {
                     x = Math.random() * maxX;
                     y = Math.random() * maxY;
@@ -858,14 +880,18 @@
 
         function endGame() {
             gameActive = false;
-            clearInterval(timerInterval);
-
+            if (timerInterval) {
+                clearInterval(timerInterval); // 확실하게 타이머 중지
+                timerInterval = null;
+            }
+            
             // 재시작 버튼이 이미 존재하면 제거 (중복 방지)
-            const oldRestartBtn = document.querySelector('.btn-restart');ㅁ
+            const oldRestartBtn = document.querySelector('.btn-restart');
             if (oldRestartBtn) oldRestartBtn.remove();
 
 
             const gameArea = document.getElementById('gameArea');
+            // 게임 영역의 모든 자식 요소(타겟)를 제거하고 게임 오버 화면 삽입
             gameArea.innerHTML = `
                 <div class="game-over-screen">
                     <h2>BROADCAST ENDED</h2>
