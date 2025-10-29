@@ -183,6 +183,7 @@
             box-shadow: 
                 0 0 10px rgba(0,217,255,0.5),
                 inset 0 0 10px rgba(0,0,0,0.8);
+            position: relative; /* **수정: timer-fill을 포함하기 위해 추가** */
         }
 
         .timer-fill {
@@ -190,7 +191,10 @@
             background: linear-gradient(90deg, #ff0055, #00d9ff);
             transition: width 0.1s linear;
             box-shadow: 0 0 20px #00d9ff;
-            position: relative;
+            position: absolute; /* **수정: 절대 위치 설정** */
+            right: 0;           /* **수정: 오른쪽에서 시작하도록 앵커링** */
+            top: 0;
+            bottom: 0;
         }
 
         .timer-fill::after {
@@ -610,12 +614,15 @@
                 const timeDecay = 0.1 + (missedSets * 0.02);
                 timeLeft -= timeDecay;
                 
-                // --- 버그 수정: 0 이하 체크 시 UI 업데이트를 강제 적용 ---
+                // 0 이하 체크 시 UI 업데이트를 강제 적용
                 if (timeLeft <= 0) { 
                     timeLeft = 0; // 시간을 0으로 고정
                     
-                    // 0.0으로 강제 업데이트
+                    // UI를 0.0으로 강제 업데이트 (사용자 피드백 반영)
                     document.getElementById('time').textContent = timeLeft.toFixed(1); 
+                    
+                    // 시간 바도 0%로 강제 업데이트 (바의 방향이 바뀌었으므로 right:0에서 width:0)
+                    document.getElementById('timerFill').style.width = '0%';
                     
                     // gameActive가 true인 경우에만 종료 로직 실행
                     if (gameActive) { 
@@ -623,7 +630,6 @@
                     }
                     return; // 인터벌 종료
                 }
-                // --- 버그 수정 끝 ---
                 
                 // 정상 작동 시 UI 업데이트
                 document.getElementById('time').textContent = timeLeft.toFixed(1);
@@ -631,6 +637,7 @@
                 const timerFill = document.getElementById('timerFill');
                 // 시간이 캡을 넘지 않도록 조정
                 const fillPercentage = Math.min(timeLeft, TIME_CAP) / TIME_CAP * 100;
+                // 바의 너비를 업데이트
                 timerFill.style.width = fillPercentage + '%';
                 
                 const timeDisplay = document.getElementById('time');
