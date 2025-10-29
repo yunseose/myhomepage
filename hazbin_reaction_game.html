@@ -610,20 +610,22 @@
                 const timeDecay = 0.1 + (missedSets * 0.02);
                 timeLeft -= timeDecay;
                 
-                // --- 버그 수정: 0 이하 체크를 강력하게 적용 ---
-                if (timeLeft <= 0.1) { 
+                // --- 버그 수정: 0 이하 체크 시 UI 업데이트를 강제 적용 ---
+                if (timeLeft <= 0) { 
                     timeLeft = 0; // 시간을 0으로 고정
                     
-                    // gameActive가 true인 경우에만 종료 로직 실행 (중복 호출 방지)
+                    // 0.0으로 강제 업데이트
+                    document.getElementById('time').textContent = timeLeft.toFixed(1); 
+                    
+                    // gameActive가 true인 경우에만 종료 로직 실행
                     if (gameActive) { 
                         endGame();
-                        // endGame에서 gameActive=false와 clearInterval이 호출되므로, 
-                        // 이후의 UI 업데이트는 실행되지 않아야 합니다.
-                        return; 
                     }
+                    return; // 인터벌 종료
                 }
                 // --- 버그 수정 끝 ---
                 
+                // 정상 작동 시 UI 업데이트
                 document.getElementById('time').textContent = timeLeft.toFixed(1);
                 
                 const timerFill = document.getElementById('timerFill');
