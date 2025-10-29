@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VOX'S REACTION CHALLENGE</title>
     <style>
+        /* (중략) 기존 CSS 스타일 유지 */
         * {
             margin: 0;
             padding: 0;
@@ -475,6 +476,29 @@
             display: none;
         }
 
+        .time-feedback {
+            position: absolute;
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff88; /* 긍정적인 시간 피드백 색상 */
+            text-shadow: 0 0 15px #00ff88;
+            pointer-events: none;
+            animation: floatUp 0.8s ease-out forwards;
+            opacity: 0;
+            z-index: 20;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px) scale(1.2);
+                opacity: 0;
+            }
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.8em;
@@ -522,6 +546,7 @@
             <div class="start-screen" id="startScreen">
                 <h2>READY?</h2>
                 <p>세트로 나오는 타겟을 모두 클릭하세요!<br>
+                성공하면 **시간이 증가합니다** (콤보 보너스!)<br>
                 점수가 오르면 타겟 개수가 늘어납니다 (최대 3개)<br>
                 못 누르면 시간 패널티! 빠르게 반응하세요!</p>
             </div>
@@ -543,6 +568,7 @@
         let targetLifetime = 2500;
         let clickedInCurrentSet = 0;
         let missedSets = 0;
+        const TIME_CAP = 60; // 최대 시간 제한
 
         const emojis = ['📺', '⚡', '💻', '🎬', '📡', '🔌', '⚙️', '💾'];
         const colors = ['#00d9ff', '#0088ff', '#00ffff', '#ff0055', '#ff3377'];
@@ -588,8 +614,10 @@
                 document.getElementById('time').textContent = timeLeft.toFixed(1);
                 
                 const timerFill = document.getElementById('timerFill');
-                timerFill.style.width = (timeLeft / 30 * 100) + '%';
-
+                // 시간이 캡을 넘지 않도록 조정
+                const fillPercentage = Math.min(timeLeft, TIME_CAP) / TIME_CAP * 100;
+                timerFill.style.width = fillPercentage + '%';
+                
                 const timeDisplay = document.getElementById('time');
                 if (timeLeft <= 10 && timeLeft > 0) {
                     timeDisplay.style.color = '#ff0055';
@@ -604,15 +632,14 @@
         }
 
         function updateDifficulty() {
-            // --- [2] 난이도 임계값 및 속도 조정 (수정됨) ---
+            // --- [1] 난이도 임계값 조정 ---
             let newTargetCount = targetCount;
 
-            // 1. 타겟 개수 증가 임계값 완화 (100점, 250점)
-            // 2개 타겟으로 증가
-            if (score >= 100 && targetCount === 1) { // 200 -> 100
+            // 2개 타겟으로 증가 (100점)
+            if (score >= 100 && targetCount === 1) {
                 newTargetCount = 2;
-            // 3개 타겟으로 증가
-            } else if (score >= 250 && targetCount === 2) { // 450 -> 250
+            // 3개 타겟으로 증가 (250점)
+            } else if (score >= 250 && targetCount === 2) {
                 newTargetCount = 3;
             }
 
@@ -623,20 +650,20 @@
                 targetLifetime = baseTargetLifetime;
             }
 
-            // 2. 타겟 생존 시간 감소율 완화 및 최소 생존 시간 증가 (속도 완화)
+            // --- [2] 타겟 생존 시간 감소율 완화 ---
             if (targetCount === 1) {
                 // 2500ms에서 최대 2000ms까지 감소
-                const scoreImpact = score * 0.8; // 이전: 1.5
+                const scoreImpact = score * 0.8; 
                 targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 2000);
             } else if (targetCount === 2) {
                 // 2500ms에서 최대 1900ms까지 감소 (점수 100부터 시작)
-                const scoreSinceChange = score - 100; // 기준점 변경
-                const scoreImpact = scoreSinceChange * 0.6; // 이전: 1.0
+                const scoreSinceChange = score - 100; 
+                const scoreImpact = scoreSinceChange * 0.6; 
                 targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1900);
             } else if (targetCount === 3) {
                 // 2500ms에서 최대 1800ms까지 감소 (점수 250부터 시작)
-                const scoreSinceChange = score - 250; // 기준점 변경
-                const scoreImpact = scoreSinceChange * 0.5; // 이전: 0.8
+                const scoreSinceChange = score - 250; 
+                const scoreImpact = scoreSinceChange * 0.5; 
                 targetLifetime = Math.max(baseTargetLifetime - scoreImpact, 1800);
             }
 
@@ -648,6 +675,29 @@
             }
         }
 
+        function showTimeFeedback(x, y, amount) {
+            const gameArea = document.getElementById('gameArea');
+            const feedback = document.createElement('div');
+            feedback.className = 'time-feedback';
+            
+            // 콤보 보너스일 경우 더 크게 표시
+            feedback.textContent = `+${amount.toFixed(1)}s`;
+            if (amount >= 1.0) {
+                feedback.style.fontSize = '2.5em';
+                feedback.style.textShadow = '0 0 20px #00ff88, 0 0 30px #00ff88';
+            }
+
+            // 타겟의 중앙 근처에 위치
+            feedback.style.left = x + 'px';
+            feedback.style.top = y + 'px';
+
+            gameArea.appendChild(feedback);
+
+            setTimeout(() => {
+                feedback.remove();
+            }, 800);
+        }
+
         function spawnTargetSet() {
             if (!gameActive) return;
 
@@ -657,7 +707,6 @@
             currentSet = [];
             clickedInCurrentSet = 0;
 
-            // 타겟 배치 위치 계산
             const positions = calculatePositions(targetCount);
 
             for (let i = 0; i < targetCount; i++) {
@@ -673,30 +722,51 @@
                 target.style.left = positions[i].x + 'px';
                 target.style.top = positions[i].y + 'px';
 
-                target.onclick = () => {
+                // --- [3] 클릭 이벤트 핸들러 수정 (시간 추가 로직 및 동시 클릭 지원) ---
+                target.onclick = (event) => {
+                    // event.stopPropagation()을 사용하지 않아 동시 클릭(다중 클릭) 가능
                     if (!gameActive || target.classList.contains('clicked')) return;
                     
                     target.classList.add('clicked');
                     clickedInCurrentSet++;
                     
+                    // 1. 기본 시간 보너스 (클릭당)
+                    const baseTimeGain = 0.3; 
+                    timeLeft += baseTimeGain;
+                    timeLeft = Math.min(timeLeft, TIME_CAP); // 최대 시간 제한 적용
+
+                    // 시간 피드백 표시 (타겟 위치에서 발생)
+                    showTimeFeedback(positions[i].x + 35, positions[i].y + 35, baseTimeGain);
+                    
                     setTimeout(() => {
                         target.remove();
                     }, 300);
 
-                    // 세트 완료 체크
+                    // 2. 세트 완료 체크
                     if (clickedInCurrentSet === targetCount) {
                         combo++;
                         
-                        // Max Combo 갱신
                         if (combo > maxCombo) {
                             maxCombo = combo;
                         }
 
+                        // 점수 계산
                         score += 10 * combo * targetCount;
-                        missedSets = Math.max(0, missedSets - 1); // 성공하면 패널티 감소
+                        missedSets = Math.max(0, missedSets - 1); 
                         
                         document.getElementById('score').textContent = score;
                         document.getElementById('combo').textContent = combo;
+
+                        // 콤보 보너스 시간 추가 (세트 완료 시)
+                        // 타겟 개수 기반 보너스 + 콤보 레벨 기반 보너스
+                        const comboTimeBonus = (targetCount * 0.5) + (combo * 0.4);
+                        timeLeft += comboTimeBonus;
+                        timeLeft = Math.min(timeLeft, TIME_CAP); // 최대 시간 제한 적용
+                        
+                        // 콤보 보너스 시간 피드백 표시 (중앙)
+                        const areaRect = gameArea.getBoundingClientRect();
+                        showTimeFeedback(areaRect.width / 2, areaRect.height / 2, comboTimeBonus);
+
 
                         if (combo % 5 === 0) {
                             showCombo(combo);
@@ -712,6 +782,7 @@
                         setTimeout(() => spawnTargetSet(), 300);
                     }
                 };
+                // --- 클릭 이벤트 핸들러 수정 끝 ---
 
                 gameArea.appendChild(target);
                 currentSet.push(target);
@@ -739,11 +810,10 @@
 
         function calculatePositions(count) {
             const gameArea = document.getElementById('gameArea');
-            // 클라이언트 폭/높이 대신 offsetWidth/Height를 사용해 정확한 크기를 가져옵니다.
             const maxX = gameArea.offsetWidth - 70;
             const maxY = gameArea.offsetHeight - 70;
             const positions = [];
-            const minDistance = 100; // 타겟 간 최소 거리
+            const minDistance = 100; 
 
             for (let i = 0; i < count; i++) {
                 let x, y, attempts = 0;
@@ -754,9 +824,7 @@
                     y = Math.random() * maxY;
                     validPosition = true;
 
-                    // 다른 타겟들과 거리 체크
                     for (let pos of positions) {
-                        // 겹치지 않도록 중심점 거리를 봅니다.
                         const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
                         if (distance < minDistance) {
                             validPosition = false;
@@ -765,7 +833,6 @@
                     }
                     attempts++;
                 }
-                // 만약 50번 시도 후에도 유효한 위치를 찾지 못하면, 일단 현재 위치를 사용합니다.
                 if (!validPosition) {
                     x = Math.random() * maxX;
                     y = Math.random() * maxY;
@@ -792,6 +859,11 @@
         function endGame() {
             gameActive = false;
             clearInterval(timerInterval);
+
+            // 재시작 버튼이 이미 존재하면 제거 (중복 방지)
+            const oldRestartBtn = document.querySelector('.btn-restart');ㅁ
+            if (oldRestartBtn) oldRestartBtn.remove();
+
 
             const gameArea = document.getElementById('gameArea');
             gameArea.innerHTML = `
