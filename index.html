@@ -1,0 +1,654 @@
+#멸치 멸치 멸치 멸치
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>코딩 포트폴리오 | 명신여고</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial Black', 'Arial Bold', Gadget, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 247, 255, 0.03) 2px,
+                    rgba(0, 247, 255, 0.03) 4px
+                );
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            color: #00f7ff;
+            animation: fadeInDown 1s ease;
+            text-shadow: 
+                0 0 10px #00f7ff,
+                0 0 20px #00f7ff,
+                0 0 30px #00f7ff,
+                0 0 40px #ff006e,
+                2px 2px 0 #000;
+            position: relative;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            letter-spacing: 3px;
+            font-weight: 900;
+        }
+
+        header p {
+            font-size: 1.3em;
+            color: #ff006e;
+            text-shadow: 
+                0 0 10px #ff006e,
+                0 0 20px #ff006e,
+                2px 2px 0 #000;
+        }
+
+        .intro-card {
+            background: linear-gradient(145deg, #1a1a2e, #0f3460);
+            border: 3px solid #00f7ff;
+            border-radius: 20px;
+            padding: 40px;
+            margin: 30px auto;
+            max-width: 800px;
+            box-shadow: 
+                0 0 20px rgba(0, 247, 255, 0.5),
+                0 0 40px rgba(255, 0, 110, 0.3),
+                inset 0 0 60px rgba(0, 247, 255, 0.1);
+            animation: fadeInUp 1s ease;
+            position: relative;
+        }
+
+        .intro-card::before {
+            content: '📺';
+            position: absolute;
+            top: -30px;
+            right: 30px;
+            font-size: 3em;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .intro-card h2 {
+            color: #00f7ff;
+            margin-bottom: 20px;
+            font-size: 2em;
+            text-shadow: 
+                0 0 10px #00f7ff,
+                0 0 20px #00f7ff,
+                2px 2px 0 #000;
+            letter-spacing: 2px;
+        }
+
+        .intro-card p {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            line-height: 1.8;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .skill-tag {
+            background: linear-gradient(135deg, #00f7ff, #0066ff);
+            color: #000;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: 2px solid #00f7ff;
+            box-shadow: 0 0 15px rgba(0, 247, 255, 0.6);
+            text-shadow: none;
+        }
+
+        .skill-tag:hover {
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 0 25px rgba(0, 247, 255, 0.9);
+            background: linear-gradient(135deg, #ff006e, #ff0080);
+            border-color: #ff006e;
+        }
+
+        .projects-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #00f7ff;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            text-shadow: 
+                0 0 10px #00f7ff,
+                0 0 20px #00f7ff,
+                0 0 30px #00f7ff,
+                3px 3px 0 #000;
+            letter-spacing: 3px;
+            font-weight: 900;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .project-card {
+            background: linear-gradient(145deg, #16213e, #0f3460);
+            border: 3px solid #00f7ff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 
+                0 0 20px rgba(0, 247, 255, 0.4),
+                0 10 30px rgba(255, 0, 110, 0.2),
+                inset 0 0 60px rgba(0, 247, 255, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: fadeInUp 1s ease;
+            position: relative;
+            overflow: visible;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #00f7ff, #ff006e, #0066ff, #00f7ff);
+            border-radius: 15px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: -1;
+            animation: borderRotate 3s linear infinite;
+        }
+
+        @keyframes borderRotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .project-card:hover::before {
+            opacity: 1;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 
+                0 0 40px rgba(0, 247, 255, 0.8),
+                0 20px 50px rgba(255, 0, 110, 0.4),
+                inset 0 0 60px rgba(0, 247, 255, 0.15);
+            border-color: #ff006e;
+        }
+
+        .project-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 10px #00f7ff);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .project-card h3 {
+            color: #00f7ff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            text-shadow: 
+                0 0 10px #00f7ff,
+                2px 2px 0 #000;
+            letter-spacing: 1px;
+        }
+
+        .project-card p {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #ff006e, #ff0080);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+            color: #000;
+            font-weight: bold;
+            border: 2px solid #ff006e;
+            box-shadow: 0 0 10px rgba(255, 0, 110, 0.6);
+        }
+
+        .add-project-btn {
+            display: block;
+            width: 250px;
+            margin: 40px auto;
+            padding: 15px 30px;
+            background: linear-gradient(135deg, #00f7ff, #0066ff);
+            color: #000;
+            border: 3px solid #00f7ff;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 
+                0 0 20px rgba(0, 247, 255, 0.6),
+                0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .add-project-btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 
+                0 0 40px rgba(0, 247, 255, 0.9),
+                0 15px 40px rgba(0, 0, 0, 0.4);
+            background: linear-gradient(135deg, #ff006e, #ff0080);
+            border-color: #ff006e;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #00f7ff;
+            font-size: 0.9em;
+            text-shadow: 
+                0 0 10px #00f7ff,
+                1px 1px 2px #000;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(145deg, #1a1a2e, #0f3460);
+            border: 3px solid #00f7ff;
+            padding: 40px;
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            box-shadow: 
+                0 0 40px rgba(0, 247, 255, 0.6),
+                0 0 80px rgba(255, 0, 110, 0.4),
+                inset 0 0 60px rgba(0, 247, 255, 0.1);
+        }
+
+        .modal-content h3 {
+            color: #00f7ff;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 
+                0 0 10px #00f7ff,
+                2px 2px 0 #000;
+            letter-spacing: 2px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00f7ff;
+            font-weight: bold;
+            text-shadow: 0 0 5px #00f7ff, 1px 1px 2px #000;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #00f7ff;
+            border-radius: 10px;
+            font-size: 1em;
+            background: rgba(15, 52, 96, 0.8);
+            color: #fff;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 0 20px rgba(0, 247, 255, 0.1);
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #ff006e;
+            box-shadow: 
+                0 0 20px rgba(0, 247, 255, 0.6),
+                inset 0 0 20px rgba(0, 247, 255, 0.2);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 12px;
+            border: 3px solid;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #00f7ff, #0066ff);
+            color: #000;
+            border-color: #00f7ff;
+            box-shadow: 0 0 20px rgba(0, 247, 255, 0.4);
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(0, 247, 255, 0.8);
+            background: linear-gradient(135deg, #00f7ff, #00aaff);
+        }
+
+        .btn-cancel {
+            background: linear-gradient(135deg, #ff006e, #ff0080);
+            color: #000;
+            border-color: #ff006e;
+            box-shadow: 0 0 20px rgba(255, 0, 110, 0.4);
+        }
+
+        .btn-cancel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 0, 110, 0.8);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1.1em;
+            }
+
+            .intro-card {
+                padding: 30px 20px;
+            }
+
+            .section-title {
+                font-size: 2em;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a2e;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #00f7ff, #ff006e);
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 247, 255, 0.5);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #ff006e, #00f7ff);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ 코딩 포트폴리오 ✨</h1>
+            <p>명신여고 1학년 | 전문가를 꿈꾸는 학생</p>
+        </header>
+
+        <div class="intro-card">
+            <h2>안녕하세요! 👋</h2>
+            <p>
+                저는 코딩을 사랑하는 명신여고 1학년 학생입니다. 
+                앱과 챗봇을 만들며 새로운 기술을 배우는 것을 즐깁니다.
+                여기에 제가 만든 다양한 프로젝트들을 소개합니다!
+            </p>
+            <div class="skills">
+                <div class="skill-tag">🐍 Python</div>
+                <div class="skill-tag">🌐 HTML/CSS/JS</div>
+                <div class="skill-tag">🤖 챗봇 개발</div>
+                <div class="skill-tag">📱 앱 개발</div>
+                <div class="skill-tag">💡 문제 해결</div>
+            </div>
+        </div>
+
+        <section class="projects-section">
+            <h2 class="section-title">📂 내 프로젝트</h2>
+            <div class="projects-grid" id="projectsGrid">
+                <div class="project-card">
+                    <div class="project-icon">🤖</div>
+                    <h3>AI 챗봇</h3>
+                    <p>자연어 처리를 활용한 대화형 챗봇입니다. 사용자의 질문에 지능적으로 답변합니다.</p>
+                    <div class="project-tags">
+                        <span class="tag">Python</span>
+                        <span class="tag">AI</span>
+                        <span class="tag">NLP</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-icon">📱</div>
+                    <h3>할일 관리 앱</h3>
+                    <p>학생들을 위한 직관적인 할일 관리 애플리케이션입니다. 시간표와 과제를 효율적으로 관리할 수 있습니다.</p>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">웹앱</span>
+                        <span class="tag">UI/UX</span>
+                    </div>
+                </div>
+
+                <div class="project-card">
+                    <div class="project-icon">🎮</div>
+                    <h3>미니 게임</h3>
+                    <p>HTML5 캔버스를 활용한 인터랙티브 미니 게임입니다. 재미있는 게임 로직을 구현했습니다.</p>
+                    <div class="project-tags">
+                        <span class="tag">HTML5</span>
+                        <span class="tag">Canvas</span>
+                        <span class="tag">게임</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="add-project-btn" onclick="openModal()">➕ 새 프로젝트 추가</button>
+        </section>
+
+        <footer>
+            <p>© 2025 명신여고 코딩 포트폴리오 | 꿈을 향해 코딩하는 중... 💻</p>
+        </footer>
+    </div>
+
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <h3>새 프로젝트 추가</h3>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label for="projectIcon">이모지 아이콘</label>
+                    <input type="text" id="projectIcon" placeholder="예: 🚀" maxlength="2" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectTitle">프로젝트 제목</label>
+                    <input type="text" id="projectTitle" placeholder="멋진 프로젝트 이름" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDesc">프로젝트 설명</label>
+                    <textarea id="projectDesc" placeholder="이 프로젝트에 대해 설명해주세요" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectTags">기술 태그 (쉼표로 구분)</label>
+                    <input type="text" id="projectTags" placeholder="예: Python, AI, 웹" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">취소</button>
+                    <button type="submit" class="btn-submit">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('projectModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').style.display = 'none';
+            document.getElementById('projectForm').reset();
+        }
+
+        document.getElementById('projectForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const icon = document.getElementById('projectIcon').value;
+            const title = document.getElementById('projectTitle').value;
+            const desc = document.getElementById('projectDesc').value;
+            const tags = document.getElementById('projectTags').value.split(',').map(tag => tag.trim());
+
+            const projectCard = document.createElement('div');
+            projectCard.className = 'project-card';
+            
+            let tagsHTML = '';
+            tags.forEach(tag => {
+                tagsHTML += `<span class="tag">${tag}</span>`;
+            });
+
+            projectCard.innerHTML = `
+                <div class="project-icon">${icon}</div>
+                <h3>${title}</h3>
+                <p>${desc}</p>
+                <div class="project-tags">
+                    ${tagsHTML}
+                </div>
+            `;
+
+            document.getElementById('projectsGrid').appendChild(projectCard);
+            closeModal();
+        });
+
+        document.getElementById('projectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
