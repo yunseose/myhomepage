@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>게임 프로젝트 목록 | 명신여고</title>
+    <style>
+        /* 포트폴리오 메인 페이지 스타일을 일부 재활용하여 일관성을 유지합니다. */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #fff;
+            line-height: 1.6;
+            text-align: center;
+            padding-top: 50px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #00f7ff;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+            border-bottom: 3px solid #ff1654;
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+        .project-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        .game-button {
+            display: block;
+            padding: 20px;
+            background: #1a1a2e;
+            color: #fff;
+            text-decoration: none;
+            border: 2px solid #00f7ff;
+            border-radius: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .game-button:hover {
+            background: #00f7ff;
+            color: #000;
+            transform: scale(1.03);
+            border-color: #ff1654;
+        }
+        .back-button {
+            display: inline-block;
+            margin-top: 40px;
+            padding: 10px 20px;
+            background: #ff1654;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        .back-button:hover {
+            background: #e0003c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 미니 게임 프로젝트 목록</h1>
+        <div class="project-list">
+            <a href="https://yunseose.github.io/myhomepage/hazbin_reaction_game.html" target="_blank" class="game-button">
+                🚀 순발력 게임 (클릭 시 바로 이동)
+            </a>
+            
+            <a href="#" class="game-button">
+                ⏳ [준비 중] 추후 추가될 게임 1
+            </a>
+            <a href="#" class="game-button">
+                💡 [준비 중] 추후 추가될 게임 2
+            </a>
+        </div>
+        <a href="index.html" class="back-button">← 포트폴리오 메인으로 돌아가기</a>
+    </div>
+</body>
+</html>
