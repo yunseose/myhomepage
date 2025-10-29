@@ -214,7 +214,7 @@
                 repeating-linear-gradient(0deg, rgba(0,217,255,0.03) 0px, transparent 2px);
             border: 3px solid #00d9ff;
             border-radius: 15px;
-            height: 300px;
+            height: 350px;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -269,22 +269,22 @@
         .start-screen p {
             color: #ff0055;
             margin-bottom: 20px;
-            font-size: 1em;
+            font-size: 0.95em;
             line-height: 1.6;
             text-shadow: 0 0 10px #ff0055;
         }
 
         .target {
             position: absolute;
-            width: 80px;
-            height: 80px;
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.1s;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2em;
+            font-size: 1.8em;
             border: 3px solid currentColor;
             animation: targetSpawn 0.3s ease-out, targetPulse 1s infinite;
             background: radial-gradient(circle, rgba(0,217,255,0.3), transparent);
@@ -401,7 +401,7 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 4em;
+            font-size: 3.5em;
             font-weight: bold;
             color: #00d9ff;
             text-shadow: 
@@ -425,28 +425,6 @@
             }
             100% {
                 transform: translate(-50%, -50%) scale(1) rotate(0deg);
-                opacity: 0;
-            }
-        }
-
-        .time-bonus {
-            position: absolute;
-            font-size: 2em;
-            font-weight: bold;
-            color: #00ff88;
-            text-shadow: 0 0 20px #00ff88;
-            animation: bonusFloat 0.8s ease-out forwards;
-            pointer-events: none;
-            z-index: 10;
-        }
-
-        @keyframes bonusFloat {
-            0% {
-                transform: translateY(0) scale(0.5);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(-80px) scale(1);
                 opacity: 0;
             }
         }
@@ -486,6 +464,17 @@
             }
         }
 
+        .difficulty-indicator {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            color: #00d9ff;
+            font-size: 0.9em;
+            text-shadow: 0 0 10px #00d9ff;
+            z-index: 5;
+            display: none;
+        }
+
         @media (max-width: 600px) {
             h1 {
                 font-size: 1.8em;
@@ -498,7 +487,7 @@
             }
             
             .game-area {
-                height: 250px;
+                height: 280px;
             }
         }
     </style>
@@ -529,9 +518,12 @@
         </div>
 
         <div class="game-area" id="gameArea">
+            <div class="difficulty-indicator" id="difficultyIndicator"></div>
             <div class="start-screen" id="startScreen">
                 <h2>READY?</h2>
-                <p>빠르게 타겟을 클릭하세요!<br>점수가 오를수록 시간이 더 빨리 줄어듭니다!<br>타겟도 더 빨리 사라집니다!</p>
+                <p>세트로 나오는 타겟을 모두 클릭하세요!<br>
+                점수가 오르면 타겟 개수가 늘어납니다 (최대 3개)<br>
+                못 누르면 시간 패널티! 빠르게 반응하세요!</p>
             </div>
         </div>
 
@@ -544,10 +536,12 @@
         let timeLeft = 30;
         let gameActive = false;
         let timerInterval;
-        let spawnTimeout;
-        let timeSpeed = 1; // 시간이 줄어드는 속도 배율
-        let targetLifetime = 2000; // 타겟이 화면에 있는 시간 (밀리초)
-        let maxTime = 30;
+        let currentSet = [];
+        let targetCount = 1; // 현재 세트의 타겟 개수
+        let baseTargetLifetime = 2500; // 기본 타겟 생존 시간
+        let targetLifetime = 2500;
+        let clickedInCurrentSet = 0;
+        let missedSets = 0;
 
         const emojis = ['📺', '⚡', '💻', '🎬', '📡', '🔌', '⚙️', '💾'];
         const colors = ['#00d9ff', '#0088ff', '#00ffff', '#ff0055', '#ff3377'];
@@ -557,8 +551,11 @@
             combo = 0;
             timeLeft = 30;
             gameActive = true;
-            timeSpeed = 1;
-            targetLifetime = 2000;
+            targetCount = 1;
+            baseTargetLifetime = 2500;
+            targetLifetime = 2500;
+            clickedInCurrentSet = 0;
+            missedSets = 0;
 
             document.getElementById('score').textContent = score;
             document.getElementById('combo').textContent = combo;
@@ -566,14 +563,21 @@
             document.getElementById('startBtn').style.display = 'none';
             document.getElementById('timerBar').style.display = 'block';
             document.getElementById('gameArea').innerHTML = '';
+            
+            const indicator = document.createElement('div');
+            indicator.className = 'difficulty-indicator';
+            indicator.id = 'difficultyIndicator';
+            document.getElementById('gameArea').appendChild(indicator);
 
-            spawnTarget();
+            spawnTargetSet();
             
             timerInterval = setInterval(() => {
                 if (!gameActive) return;
                 
-                // 시간이 점점 빨리 줄어듦 (최대 3배속까지)
-                timeLeft -= 0.1 * timeSpeed;
+                // 기본 시간 감소 + 놓친 세트마다 추가 감소
+                const timeDecay = 0.1 + (missedSets * 0.02);
+                timeLeft -= timeDecay;
+                
                 if (timeLeft <= 0) {
                     timeLeft = 0;
                     endGame();
@@ -582,9 +586,8 @@
                 document.getElementById('time').textContent = timeLeft.toFixed(1);
                 
                 const timerFill = document.getElementById('timerFill');
-                timerFill.style.width = (timeLeft / maxTime * 100) + '%';
+                timerFill.style.width = (timeLeft / 30 * 100) + '%';
 
-                // 시간이 10초 이하일 때 글리치 효과
                 const timeDisplay = document.getElementById('time');
                 if (timeLeft <= 10 && timeLeft > 0) {
                     timeDisplay.style.color = '#ff0055';
@@ -598,85 +601,155 @@
             }, 100);
         }
 
-        function spawnTarget() {
+        function updateDifficulty() {
+            // 점수에 따라 타겟 개수 조정
+            if (score >= 300) {
+                if (targetCount !== 3) {
+                    targetCount = 3;
+                    baseTargetLifetime = 2200; // 개수 늘어날 때 시간 완화
+                    targetLifetime = baseTargetLifetime;
+                }
+            } else if (score >= 150) {
+                if (targetCount !== 2) {
+                    targetCount = 2;
+                    baseTargetLifetime = 2400; // 개수 늘어날 때 시간 완화
+                    targetLifetime = baseTargetLifetime;
+                }
+            } else {
+                targetCount = 1;
+            }
+
+            // 같은 개수 내에서 점점 빨라짐
+            if (targetCount === 1) {
+                targetLifetime = Math.max(baseTargetLifetime - (score * 3), 1500);
+            } else if (targetCount === 2) {
+                targetLifetime = Math.max(baseTargetLifetime - ((score - 150) * 2.5), 1400);
+            } else if (targetCount === 3) {
+                targetLifetime = Math.max(baseTargetLifetime - ((score - 300) * 2), 1300);
+            }
+
+            // 난이도 표시
+            const indicator = document.getElementById('difficultyIndicator');
+            if (indicator) {
+                indicator.style.display = 'block';
+                indicator.textContent = `TARGETS: ${targetCount}`;
+            }
+        }
+
+        function spawnTargetSet() {
             if (!gameActive) return;
 
+            updateDifficulty();
+
             const gameArea = document.getElementById('gameArea');
-            const target = document.createElement('div');
-            target.className = 'target';
-            
-            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            
-            target.textContent = emoji;
-            target.style.color = color;
-            target.style.borderColor = color;
-            
-            const maxX = gameArea.clientWidth - 80;
-            const maxY = gameArea.clientHeight - 80;
-            const x = Math.random() * maxX;
-            const y = Math.random() * maxY;
-            
-            target.style.left = x + 'px';
-            target.style.top = y + 'px';
+            currentSet = [];
+            clickedInCurrentSet = 0;
 
-            target.onclick = () => {
-                if (!gameActive) return;
+            // 타겟 배치 위치 계산
+            const positions = calculatePositions(targetCount);
+
+            for (let i = 0; i < targetCount; i++) {
+                const target = document.createElement('div');
+                target.className = 'target';
                 
-                target.classList.add('clicked');
+                const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+                const color = colors[Math.floor(Math.random() * colors.length)];
                 
-                combo++;
-                score += 10 * combo;
-                
-                document.getElementById('score').textContent = score;
-                document.getElementById('combo').textContent = combo;
+                target.textContent = emoji;
+                target.style.color = color;
+                target.style.borderColor = color;
+                target.style.left = positions[i].x + 'px';
+                target.style.top = positions[i].y + 'px';
 
-                // 점수가 오를수록 시간이 더 빨리 줄어듦 (최대 3배속)
-                if (score >= 500) {
-                    timeSpeed = 3;
-                } else if (score >= 300) {
-                    timeSpeed = 2.5;
-                } else if (score >= 200) {
-                    timeSpeed = 2;
-                } else if (score >= 100) {
-                    timeSpeed = 1.5;
-                }
+                target.onclick = () => {
+                    if (!gameActive || target.classList.contains('clicked')) return;
+                    
+                    target.classList.add('clicked');
+                    clickedInCurrentSet++;
+                    
+                    setTimeout(() => {
+                        target.remove();
+                    }, 300);
 
-                // 점수가 오를수록 타겟이 더 빨리 사라짐 (최소 500ms)
-                if (score >= 400) {
-                    targetLifetime = 500;
-                } else if (score >= 300) {
-                    targetLifetime = 700;
-                } else if (score >= 200) {
-                    targetLifetime = 1000;
-                } else if (score >= 100) {
-                    targetLifetime = 1300;
-                } else if (score >= 50) {
-                    targetLifetime = 1600;
-                }
+                    // 세트 완료 체크
+                    if (clickedInCurrentSet === targetCount) {
+                        combo++;
+                        score += 10 * combo * targetCount;
+                        missedSets = Math.max(0, missedSets - 1); // 성공하면 패널티 감소
+                        
+                        document.getElementById('score').textContent = score;
+                        document.getElementById('combo').textContent = combo;
 
-                if (combo % 5 === 0) {
-                    showCombo(combo);
-                }
+                        if (combo % 5 === 0) {
+                            showCombo(combo);
+                        }
 
-                setTimeout(() => {
-                    target.remove();
-                }, 300);
+                        // 현재 세트의 모든 타겟 제거
+                        currentSet.forEach(t => {
+                            if (t.parentElement) t.remove();
+                        });
+                        currentSet = [];
 
-                spawnTarget();
-            };
+                        // 다음 세트 생성
+                        setTimeout(() => spawnTargetSet(), 300);
+                    }
+                };
 
-            gameArea.appendChild(target);
+                gameArea.appendChild(target);
+                currentSet.push(target);
+            }
 
-            // 일정 시간 후 자동으로 사라짐 (놓치면 콤보 리셋)
-            spawnTimeout = setTimeout(() => {
-                if (target.parentElement && !target.classList.contains('clicked')) {
-                    target.remove();
+            // 시간 내에 못 클릭하면 세트 실패
+            setTimeout(() => {
+                if (currentSet.length > 0 && currentSet[0].parentElement) {
+                    // 세트 실패
                     combo = 0;
+                    missedSets++;
                     document.getElementById('combo').textContent = combo;
-                    spawnTarget();
+                    
+                    // 현재 세트 모두 제거
+                    currentSet.forEach(t => {
+                        if (t.parentElement) t.remove();
+                    });
+                    currentSet = [];
+                    
+                    // 다음 세트 생성
+                    spawnTargetSet();
                 }
             }, targetLifetime);
+        }
+
+        function calculatePositions(count) {
+            const gameArea = document.getElementById('gameArea');
+            const maxX = gameArea.clientWidth - 70;
+            const maxY = gameArea.clientHeight - 70;
+            const positions = [];
+            const minDistance = 100; // 타겟 간 최소 거리
+
+            for (let i = 0; i < count; i++) {
+                let x, y, attempts = 0;
+                let validPosition = false;
+
+                while (!validPosition && attempts < 50) {
+                    x = Math.random() * maxX;
+                    y = Math.random() * maxY;
+                    validPosition = true;
+
+                    // 다른 타겟들과 거리 체크
+                    for (let pos of positions) {
+                        const distance = Math.sqrt(Math.pow(x - pos.x, 2) + Math.pow(y - pos.y, 2));
+                        if (distance < minDistance) {
+                            validPosition = false;
+                            break;
+                        }
+                    }
+                    attempts++;
+                }
+
+                positions.push({ x, y });
+            }
+
+            return positions;
         }
 
         function showCombo(comboCount) {
@@ -694,7 +767,6 @@
         function endGame() {
             gameActive = false;
             clearInterval(timerInterval);
-            clearTimeout(spawnTimeout);
 
             const gameArea = document.getElementById('gameArea');
             gameArea.innerHTML = `
