@@ -5,48 +5,331 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>코딩 포트폴리오 | 명신여고</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #000; color: #fff; line-height: 1.6; min-height: 100vh; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        header { text-align: center; padding: 60px 20px; background: #1a1a2e; border-bottom: 4px solid #00f7ff; margin-bottom: 40px; }
-        header h1 { font-size: 3em; margin-bottom: 10px; color: #00f7ff; font-weight: 700; }
-        header p { font-size: 1.3em; color: #ff1654; font-weight: 600; }
-        .intro-card { background: #1a1a2e; border: 3px solid #00f7ff; border-radius: 12px; padding: 40px; margin: 30px auto; max-width: 800px; }
-        .intro-card h2 { color: #00f7ff; margin-bottom: 20px; font-size: 2em; font-weight: 700; }
-        .intro-card p { font-size: 1.1em; color: #e0e0e0; line-height: 1.8; }
-        .skills { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 25px; }
-        .skill-tag { background: #00f7ff; color: #000; padding: 10px 20px; border-radius: 6px; font-size: 0.95em; font-weight: 700; transition: all 0.3s ease; }
-        .skill-tag:hover { background: #ff1654; transform: translateY(-3px); }
-        .projects-section { margin-top: 50px; }
-        .section-title { text-align: center; color: #00f7ff; font-size: 2.5em; margin-bottom: 40px; font-weight: 700; padding-bottom: 15px; border-bottom: 4px solid #ff1654; display: inline-block; width: 100%; }
-        .projects-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px; }
-        .project-card { background: #1a1a2e; border: 3px solid #2d3561; border-radius: 12px; padding: 30px; transition: all 0.3s ease; } /* cursor 제거 */
-        .project-card:hover { transform: translateY(-8px); border-color: #00f7ff; }
-        .project-icon { font-size: 3em; margin-bottom: 15px; }
-        .project-card h3 { color: #00f7ff; margin-bottom: 15px; font-size: 1.5em; font-weight: 700; }
-        .project-card p { color: #e0e0e0; margin-bottom: 20px; }
-        .project-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 15px; }
-        .tag { background: #ff1654; padding: 6px 14px; border-radius: 6px; font-size: 0.85em; color: #fff; font-weight: 600; cursor: pointer; }
-        .project-card a { pointer-events: auto; text-decoration: none; color: #fff; }
-        .add-project-btn { display: block; width: 250px; margin: 40px auto; padding: 16px 32px; background: #00f7ff; color: #000; border: none; border-radius: 8px; font-size: 1.1em; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-        .add-project-btn:hover { background: #ff1654; color: #fff; transform: translateY(-3px); }
-        footer { text-align: center; padding: 40px; color: #00f7ff; font-size: 0.95em; border-top: 3px solid #2d3561; margin-top: 60px; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center; }
-        .modal-content { background: #1a1a2e; border: 3px solid #00f7ff; padding: 40px; border-radius: 12px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto; }
-        .modal-content h3 { color: #00f7ff; margin-bottom: 25px; font-size: 1.8em; font-weight: 700; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; margin-bottom: 8px; color: #00f7ff; font-weight: 600; }
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; border: 2px solid #2d3561; border-radius: 6px; font-size: 1em; background: #0f1729; color: #fff; transition: border-color 0.3s ease; }
-        .form-group input:focus, .form-group textarea:focus { outline: none; border-color: #00f7ff; }
-        .form-group textarea { resize: vertical; min-height: 100px; }
-        .modal-buttons { display: flex; gap: 12px; margin-top: 30px; }
-        .modal-buttons button { flex: 1; padding: 14px; border: none; border-radius: 8px; font-size: 1em; font-weight: 700; cursor: pointer; transition: all 0.3s ease; }
-        .btn-submit { background: #00f7ff; color: #000; }
-        .btn-submit:hover { background: #00d4e0; transform: translateY(-2px); }
-        .btn-cancel { background: #ff1654; color: #fff; }
-        .btn-cancel:hover { background: #e0003c; transform: translateY(-2px); }
-        @media (max-width:768px){ header h1{font-size:2em;} header p{font-size:1.1em;} .intro-card{padding:30px 20px;} .section-title{font-size:2em;} .projects-grid{grid-template-columns:1fr;} }
-        ::-webkit-scrollbar{width:12px;} ::-webkit-scrollbar-track{background:#0f1729;} ::-webkit-scrollbar-thumb{background:#00f7ff; border-radius:6px;} ::-webkit-scrollbar-thumb:hover{background:#ff1654;}
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 60px 20px;
+            background: #1a1a2e;
+            border-bottom: 4px solid #00f7ff;
+            margin-bottom: 40px;
+        }
+
+        header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #00f7ff;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.3em;
+            color: #ff1654;
+            font-weight: 600;
+        }
+
+        .intro-card {
+            background: #1a1a2e;
+            border: 3px solid #00f7ff;
+            border-radius: 12px;
+            padding: 40px;
+            margin: 30px auto;
+            max-width: 800px;
+        }
+
+        .intro-card h2 {
+            color: #00f7ff;
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        .intro-card p {
+            font-size: 1.1em;
+            color: #e0e0e0;
+            line-height: 1.8;
+        }
+
+        .skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .skill-tag {
+            background: #00f7ff;
+            color: #000;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 0.95em;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .skill-tag:hover {
+            background: #ff1654;
+            transform: translateY(-3px);
+        }
+
+        .projects-section {
+            margin-top: 50px;
+        }
+
+        .section-title {
+            text-align: center;
+            color: #00f7ff;
+            font-size: 2.5em;
+            margin-bottom: 40px;
+            font-weight: 700;
+            padding-bottom: 15px;
+            border-bottom: 4px solid #ff1654;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .project-card {
+            background: #1a1a2e;
+            border: 3px solid #2d3561;
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-8px);
+            border-color: #00f7ff;
+        }
+
+        .project-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .project-card h3 {
+            color: #00f7ff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+            font-weight: 700;
+        }
+
+        .project-card p {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .project-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .tag {
+            background: #ff1654;
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 0.85em;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .add-project-btn {
+            display: block;
+            width: 250px;
+            margin: 40px auto;
+            padding: 16px 32px;
+            background: #00f7ff;
+            color: #000;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-project-btn:hover {
+            background: #ff1654;
+            color: #fff;
+            transform: translateY(-3px);
+        }
+
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #00f7ff;
+            font-size: 0.95em;
+            border-top: 3px solid #2d3561;
+            margin-top: 60px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #1a1a2e;
+            border: 3px solid #00f7ff;
+            padding: 40px;
+            border-radius: 12px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content h3 {
+            color: #00f7ff;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            font-weight: 700;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00f7ff;
+            font-weight: 600;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #2d3561;
+            border-radius: 6px;
+            font-size: 1em;
+            background: #0f1729;
+            color: #fff;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #00f7ff;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit {
+            background: #00f7ff;
+            color: #000;
+        }
+
+        .btn-submit:hover {
+            background: #00d4e0;
+            transform: translateY(-2px);
+        }
+
+        .btn-cancel {
+            background: #ff1654;
+            color: #fff;
+        }
+
+        .btn-cancel:hover {
+            background: #e0003c;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2em;
+            }
+
+            header p {
+                font-size: 1.1em;
+            }
+
+            .intro-card {
+                padding: 30px 20px;
+            }
+
+            .section-title {
+                font-size: 2em;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        ::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #0f1729;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #00f7ff;
+            border-radius: 6px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ff1654;
+        }
     </style>
 </head>
 <body>
@@ -59,7 +342,9 @@
         <div class="intro-card">
             <h2>안녕하세요! 👋</h2>
             <p>
-                저는 코딩을 사랑하는 명신여고 1학년 학생입니다. 앱과 챗봇을 만들며 새로운 기술을 배우는 것을 즐깁니다. 여기에 제가 만든 다양한 프로젝트들을 소개합니다!
+                저는 코딩을 사랑하는 명신여고 1학년 학생입니다. 
+                앱과 챗봇을 만들며 새로운 기술을 배우는 것을 즐깁니다.
+                여기에 제가 만든 다양한 프로젝트들을 소개합니다!
             </p>
             <div class="skills">
                 <div class="skill-tag">🐍 Python</div>
@@ -102,7 +387,7 @@
                     <div class="project-tags">
                         <span class="tag">HTML5</span>
                         <span class="tag">Canvas</span>
-                        <a href="https://yunseose.github.io/myhomepage/hazbin_reaction_game.html" target="_blank" class="tag">게임</a>
+                        <span class="tag">게임</span>
                     </div>
                 </div>
             </div>
@@ -111,4 +396,82 @@
         </section>
 
         <footer>
-            <p>© 2025 명신여고 코딩 포트폴리오 | 꿈을 향해 코딩하는 중... 💻</p> </footer> </div> <div class="modal" id="projectModal"> <div class="modal-content"> <h3>새 프로젝트 추가</h3> <form id="projectForm"> <div class="form-group"> <label for="projectIcon">이모지 아이콘</label> <input type="text" id="projectIcon" placeholder="예: 🚀" maxlength="2" required> </div> <div class="form-group"> <label for="projectTitle">프로젝트 제목</label> <input type="text" id="projectTitle" placeholder="멋진 프로젝트 이름" required> </div> <div class="form-group"> <label for="projectDesc">프로젝트 설명</label> <textarea id="projectDesc" placeholder="이 프로젝트에 대해 설명해주세요" required></textarea> </div> <div class="form-group"> <label for="projectTags">기술 태그 (쉼표로 구분)</label> <input type="text" id="projectTags" placeholder="예: Python, AI, 웹" required> </div> <div class="modal-buttons"> <button type="button" class="btn-cancel" onclick="closeModal()">취소</button> <button type="submit" class="btn-submit">추가하기</button> </div> </form> </div> </div> <script> function openModal() { document.getElementById('projectModal').style.display = 'flex'; } function closeModal() { document.getElementById('projectModal').style.display = 'none'; document.getElementById('projectForm').reset(); } document.getElementById('projectForm').addEventListener('submit', function(e) { e.preventDefault(); const icon = document.getElementById('projectIcon').value; const title = document.getElementById('projectTitle').value; const desc = document.getElementById('projectDesc').value; const tags = document.getElementById('projectTags').value.split(',').map(tag => tag.trim()); const projectCard = document.createElement('div'); projectCard.className = 'project-card'; let tagsHTML = ''; tags.forEach(tag => { tagsHTML += <span class="tag">${tag}</span>; }); projectCard.innerHTML = <div class="project-icon">${icon}</div> <h3>${title}</h3> <p>${desc}</p> <div class="project-tags"> ${tagsHTML} </div> ; document.getElementById('projectsGrid').appendChild(projectCard); closeModal(); }); document.getElementById('projectModal').addEventListener('click', function(e) { if (e.target === this) { closeModal(); } }); </script> </body> </html>
+            <p>© 2025 명신여고 코딩 포트폴리오 | 꿈을 향해 코딩하는 중... 💻</p>
+        </footer>
+    </div>
+
+    <div class="modal" id="projectModal">
+        <div class="modal-content">
+            <h3>새 프로젝트 추가</h3>
+            <form id="projectForm">
+                <div class="form-group">
+                    <label for="projectIcon">이모지 아이콘</label>
+                    <input type="text" id="projectIcon" placeholder="예: 🚀" maxlength="2" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectTitle">프로젝트 제목</label>
+                    <input type="text" id="projectTitle" placeholder="멋진 프로젝트 이름" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectDesc">프로젝트 설명</label>
+                    <textarea id="projectDesc" placeholder="이 프로젝트에 대해 설명해주세요" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectTags">기술 태그 (쉼표로 구분)</label>
+                    <input type="text" id="projectTags" placeholder="예: Python, AI, 웹" required>
+                </div>
+                <div class="modal-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeModal()">취소</button>
+                    <button type="submit" class="btn-submit">추가하기</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal() {
+            document.getElementById('projectModal').style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').style.display = 'none';
+            document.getElementById('projectForm').reset();
+        }
+
+        document.getElementById('projectForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const icon = document.getElementById('projectIcon').value;
+            const title = document.getElementById('projectTitle').value;
+            const desc = document.getElementById('projectDesc').value;
+            const tags = document.getElementById('projectTags').value.split(',').map(tag => tag.trim());
+
+            const projectCard = document.createElement('div');
+            projectCard.className = 'project-card';
+            
+            let tagsHTML = '';
+            tags.forEach(tag => {
+                tagsHTML += `<span class="tag">${tag}</span>`;
+            });
+
+            projectCard.innerHTML = `
+                <div class="project-icon">${icon}</div>
+                <h3>${title}</h3>
+                <p>${desc}</p>
+                <div class="project-tags">
+                    ${tagsHTML}
+                </div>
+            `;
+
+            document.getElementById('projectsGrid').appendChild(projectCard);
+            closeModal();
+        });
+
+        document.getElementById('projectModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+</body>
+</html>
