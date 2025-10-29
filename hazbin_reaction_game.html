@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VOX'S REACTION CHALLENGE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #0a0a1a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(0deg, rgba(0,100,255,0.03) 0px, transparent 2px, transparent 4px),
+                radial-gradient(circle at 50% 50%, rgba(0,200,255,0.1), transparent 70%);
+            animation: scanline 8s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100px); }
+        }
+
+        .container {
+            background: linear-gradient(145deg, #0d1b2a 0%, #1b263b 100%);
+            border: 4px solid #00d9ff;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 
+                0 0 60px rgba(0,217,255,0.6),
+                inset 0 0 40px rgba(0,100,255,0.1),
+                0 0 100px rgba(255,0,100,0.3);
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #00d9ff, #ff0055, #00d9ff);
+            border-radius: 20px;
+            z-index: -1;
+            opacity: 0.7;
+            filter: blur(15px);
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        .tv-frame {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 2px solid rgba(0,217,255,0.3);
+            border-radius: 15px;
+            pointer-events: none;
+        }
+
+        h1 {
+            color: #00d9ff;
+            text-align: center;
+            font-size: 2.3em;
+            margin-bottom: 5px;
+            text-shadow: 
+                0 0 10px #00d9ff,
+                0 0 20px #00d9ff,
+                0 0 30px #0088ff,
+                2px 2px 0 #ff0055;
+            letter-spacing: 3px;
+            font-weight: bold;
+            animation: flicker 3s infinite;
+        }
+
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            94% { opacity: 1; }
+            95% { opacity: 0.8; }
+            96% { opacity: 1; }
+            97% { opacity: 0.9; }
+            98% { opacity: 1; }
+        }
+
+        .subtitle {
+            color: #ff0055;
+            text-align: center;
+            font-size: 0.9em;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #ff0055;
+            letter-spacing: 2px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            gap: 15px;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, rgba(0,100,255,0.2), rgba(0,217,255,0.1));
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #00d9ff;
+            text-align: center;
+            flex: 1;
+            box-shadow: 
+                0 0 20px rgba(0,217,255,0.3),
+                inset 0 0 20px rgba(0,100,255,0.1);
+            position: relative;
+        }
+
+        .stat-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00d9ff, transparent);
+            animation: scan 2s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .stat-label {
+            color: #00d9ff;
+            font-size: 0.8em;
+            margin-bottom: 5px;
+            text-shadow: 0 0 5px #00d9ff;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stat-value {
+            color: #fff;
+            font-size: 1.8em;
+            font-weight: bold;
+            text-shadow: 0 0 15px #00d9ff;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .timer-bar {
+            width: 100%;
+            height: 12px;
+            background: rgba(0,0,0,0.6);
+            border-radius: 6px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 2px solid #00d9ff;
+            box-shadow: 
+                0 0 10px rgba(0,217,255,0.5),
+                inset 0 0 10px rgba(0,0,0,0.8);
+        }
+
+        .timer-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ff0055, #00d9ff);
+            transition: width 0.1s linear;
+            box-shadow: 0 0 20px #00d9ff;
+            position: relative;
+        }
+
+        .timer-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .game-area {
+            background: 
+                linear-gradient(135deg, rgba(0,20,40,0.9), rgba(10,30,60,0.9)),
+                repeating-linear-gradient(0deg, rgba(0,217,255,0.03) 0px, transparent 2px);
+            border: 3px solid #00d9ff;
+            border-radius: 15px;
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 25px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 50px rgba(0,100,255,0.3),
+                0 0 30px rgba(0,217,255,0.2);
+        }
+
+        .game-area::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent 0px,
+                rgba(0,217,255,0.03) 1px,
+                transparent 2px,
+                transparent 4px
+            );
+            pointer-events: none;
+            animation: screenLines 0.1s linear infinite;
+        }
+
+        @keyframes screenLines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+
+        .start-screen, .game-over-screen {
+            text-align: center;
+            color: #fff;
+            z-index: 1;
+        }
+
+        .start-screen h2, .game-over-screen h2 {
+            color: #00d9ff;
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-shadow: 
+                0 0 20px #00d9ff,
+                0 0 40px #0088ff;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        .start-screen p {
+            color: #ff0055;
+            margin-bottom: 20px;
+            font-size: 1em;
+            line-height: 1.6;
+            text-shadow: 0 0 10px #ff0055;
+        }
+
+        .target {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.1s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            border: 3px solid currentColor;
+            animation: targetSpawn 0.3s ease-out, targetPulse 1s infinite;
+            background: radial-gradient(circle, rgba(0,217,255,0.3), transparent);
+        }
+
+        @keyframes targetSpawn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: scale(1.2);
+            }
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes targetPulse {
+            0%, 100% {
+                box-shadow: 0 0 20px currentColor;
+            }
+            50% {
+                box-shadow: 0 0 40px currentColor, 0 0 60px currentColor;
+            }
+        }
+
+        .target:hover {
+            transform: scale(1.15);
+            filter: brightness(1.3);
+        }
+
+        .target:active {
+            transform: scale(0.9);
+        }
+
+        .target.clicked {
+            animation: targetPop 0.3s ease-out forwards;
+        }
+
+        @keyframes targetPop {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.5) rotate(180deg);
+                opacity: 0.8;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            font-size: 1.3em;
+            font-weight: bold;
+            border: 3px solid #00d9ff;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            position: relative;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #0066ff, #00d9ff);
+            color: #fff;
+            box-shadow: 
+                0 5px 25px rgba(0,217,255,0.5),
+                inset 0 0 20px rgba(0,217,255,0.2);
+            text-shadow: 0 0 10px #00d9ff;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 35px rgba(0,217,255,0.7),
+                inset 0 0 30px rgba(0,217,255,0.3);
+            background: linear-gradient(135deg, #0088ff, #00ffff);
+        }
+
+        .btn-start:active {
+            transform: translateY(0);
+        }
+
+        .btn-restart {
+            background: linear-gradient(135deg, #ff0055, #ff3377);
+            color: #fff;
+            border-color: #ff0055;
+            box-shadow: 
+                0 5px 25px rgba(255,0,85,0.5),
+                inset 0 0 20px rgba(255,0,85,0.2);
+            text-shadow: 0 0 10px #ff0055;
+            margin-top: 15px;
+        }
+
+        .btn-restart:hover {
+            transform: translateY(-3px);
+            box-shadow: 
+                0 8px 35px rgba(255,0,85,0.7),
+                inset 0 0 30px rgba(255,0,85,0.3);
+        }
+
+        .combo {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4em;
+            font-weight: bold;
+            color: #00d9ff;
+            text-shadow: 
+                0 0 30px #00d9ff,
+                0 0 60px #0088ff,
+                3px 3px 0 #ff0055;
+            animation: comboShow 0.6s ease-out;
+            pointer-events: none;
+            z-index: 10;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        @keyframes comboShow {
+            0% {
+                transform: translate(-50%, -50%) scale(0) rotate(-20deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.3) rotate(5deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1) rotate(0deg);
+                opacity: 0;
+            }
+        }
+
+        .time-bonus {
+            position: absolute;
+            font-size: 2em;
+            font-weight: bold;
+            color: #00ff88;
+            text-shadow: 0 0 20px #00ff88;
+            animation: bonusFloat 0.8s ease-out forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes bonusFloat {
+            0% {
+                transform: translateY(0) scale(0.5);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-80px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .final-score {
+            color: #00d9ff;
+            font-size: 3em;
+            margin: 15px 0;
+            text-shadow: 
+                0 0 30px #00d9ff,
+                0 0 60px #0088ff;
+            font-family: 'Arial Black', sans-serif;
+        }
+
+        .glitch {
+            animation: glitchEffect 0.3s infinite;
+        }
+
+        @keyframes glitchEffect {
+            0% {
+                transform: translate(0);
+            }
+            20% {
+                transform: translate(-2px, 2px);
+            }
+            40% {
+                transform: translate(-2px, -2px);
+            }
+            60% {
+                transform: translate(2px, 2px);
+            }
+            80% {
+                transform: translate(2px, -2px);
+            }
+            100% {
+                transform: translate(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .target {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5em;
+            }
+            
+            .game-area {
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="tv-frame"></div>
+        <h1>📺 VOX SPEED 📺</h1>
+        <p class="subtitle">/// TRUST ME - YOU'LL LOVE THIS ///</p>
+        
+        <div class="timer-bar" id="timerBar" style="display: none;">
+            <div class="timer-fill" id="timerFill"></div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-box">
+                <div class="stat-label">SCORE</div>
+                <div class="stat-value" id="score">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">COMBO</div>
+                <div class="stat-value" id="combo">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">TIME</div>
+                <div class="stat-value" id="time">30.0</div>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <div class="start-screen" id="startScreen">
+                <h2>READY?</h2>
+                <p>빠르게 타겟을 클릭하세요!<br>점수가 오를수록 시간이 더 빨리 줄어듭니다!<br>타겟도 더 빨리 사라집니다!</p>
+            </div>
+        </div>
+
+        <button class="btn-start" id="startBtn" onclick="startGame()">▶ START BROADCAST</button>
+    </div>
+
+    <script>
+        let score = 0;
+        let combo = 0;
+        let timeLeft = 30;
+        let gameActive = false;
+        let timerInterval;
+        let spawnTimeout;
+        let timeSpeed = 1; // 시간이 줄어드는 속도 배율
+        let targetLifetime = 2000; // 타겟이 화면에 있는 시간 (밀리초)
+        let maxTime = 30;
+
+        const emojis = ['📺', '⚡', '💻', '🎬', '📡', '🔌', '⚙️', '💾'];
+        const colors = ['#00d9ff', '#0088ff', '#00ffff', '#ff0055', '#ff3377'];
+
+        function startGame() {
+            score = 0;
+            combo = 0;
+            timeLeft = 30;
+            gameActive = true;
+            timeSpeed = 1;
+            targetLifetime = 2000;
+
+            document.getElementById('score').textContent = score;
+            document.getElementById('combo').textContent = combo;
+            document.getElementById('time').textContent = timeLeft.toFixed(1);
+            document.getElementById('startBtn').style.display = 'none';
+            document.getElementById('timerBar').style.display = 'block';
+            document.getElementById('gameArea').innerHTML = '';
+
+            spawnTarget();
+            
+            timerInterval = setInterval(() => {
+                if (!gameActive) return;
+                
+                // 시간이 점점 빨리 줄어듦 (최대 3배속까지)
+                timeLeft -= 0.1 * timeSpeed;
+                if (timeLeft <= 0) {
+                    timeLeft = 0;
+                    endGame();
+                }
+                
+                document.getElementById('time').textContent = timeLeft.toFixed(1);
+                
+                const timerFill = document.getElementById('timerFill');
+                timerFill.style.width = (timeLeft / maxTime * 100) + '%';
+
+                // 시간이 10초 이하일 때 글리치 효과
+                const timeDisplay = document.getElementById('time');
+                if (timeLeft <= 10 && timeLeft > 0) {
+                    timeDisplay.style.color = '#ff0055';
+                    if (Math.random() > 0.7) {
+                        timeDisplay.classList.add('glitch');
+                    }
+                } else {
+                    timeDisplay.style.color = '#fff';
+                    timeDisplay.classList.remove('glitch');
+                }
+            }, 100);
+        }
+
+        function spawnTarget() {
+            if (!gameActive) return;
+
+            const gameArea = document.getElementById('gameArea');
+            const target = document.createElement('div');
+            target.className = 'target';
+            
+            const emoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            
+            target.textContent = emoji;
+            target.style.color = color;
+            target.style.borderColor = color;
+            
+            const maxX = gameArea.clientWidth - 80;
+            const maxY = gameArea.clientHeight - 80;
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+            
+            target.style.left = x + 'px';
+            target.style.top = y + 'px';
+
+            target.onclick = () => {
+                if (!gameActive) return;
+                
+                target.classList.add('clicked');
+                
+                combo++;
+                score += 10 * combo;
+                
+                document.getElementById('score').textContent = score;
+                document.getElementById('combo').textContent = combo;
+
+                // 점수가 오를수록 시간이 더 빨리 줄어듦 (최대 3배속)
+                if (score >= 500) {
+                    timeSpeed = 3;
+                } else if (score >= 300) {
+                    timeSpeed = 2.5;
+                } else if (score >= 200) {
+                    timeSpeed = 2;
+                } else if (score >= 100) {
+                    timeSpeed = 1.5;
+                }
+
+                // 점수가 오를수록 타겟이 더 빨리 사라짐 (최소 500ms)
+                if (score >= 400) {
+                    targetLifetime = 500;
+                } else if (score >= 300) {
+                    targetLifetime = 700;
+                } else if (score >= 200) {
+                    targetLifetime = 1000;
+                } else if (score >= 100) {
+                    targetLifetime = 1300;
+                } else if (score >= 50) {
+                    targetLifetime = 1600;
+                }
+
+                if (combo % 5 === 0) {
+                    showCombo(combo);
+                }
+
+                setTimeout(() => {
+                    target.remove();
+                }, 300);
+
+                spawnTarget();
+            };
+
+            gameArea.appendChild(target);
+
+            // 일정 시간 후 자동으로 사라짐 (놓치면 콤보 리셋)
+            spawnTimeout = setTimeout(() => {
+                if (target.parentElement && !target.classList.contains('clicked')) {
+                    target.remove();
+                    combo = 0;
+                    document.getElementById('combo').textContent = combo;
+                    spawnTarget();
+                }
+            }, targetLifetime);
+        }
+
+        function showCombo(comboCount) {
+            const gameArea = document.getElementById('gameArea');
+            const comboText = document.createElement('div');
+            comboText.className = 'combo';
+            comboText.textContent = `${comboCount}x COMBO!`;
+            gameArea.appendChild(comboText);
+
+            setTimeout(() => {
+                comboText.remove();
+            }, 600);
+        }
+
+        function endGame() {
+            gameActive = false;
+            clearInterval(timerInterval);
+            clearTimeout(spawnTimeout);
+
+            const gameArea = document.getElementById('gameArea');
+            gameArea.innerHTML = `
+                <div class="game-over-screen">
+                    <h2>BROADCAST ENDED</h2>
+                    <div class="final-score">${score}</div>
+                    <p style="color: #00d9ff; font-size: 1.2em;">최고 콤보: ${combo}x</p>
+                    <p style="color: #ff0055; font-size: 0.9em; margin-top: 10px;">/// STAY TUNED ///</p>
+                </div>
+            `;
+
+            const restartBtn = document.createElement('button');
+            restartBtn.className = 'btn-restart';
+            restartBtn.textContent = '▶ RESTART BROADCAST';
+            restartBtn.onclick = startGame;
+            document.querySelector('.container').appendChild(restartBtn);
+        }
+    </script>
+</body>
+</html>
