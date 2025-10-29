@@ -1,2 +1,2 @@
 # myhomepage
-I'm so cuty
+나의 홈페이지입니다
